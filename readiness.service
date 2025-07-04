@@ -1,0 +1,11 @@
+[Unit]
+Description=Server Readiness
+After=network.target
+
+[Service]
+ExecStart=/usr/local/bin/startup
+Restart=always
+RestartSec=5
+
+[Install]
+WantedBy=default.target
