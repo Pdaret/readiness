@@ -2,14 +2,30 @@ package main
 
 import (
 	"bufio"
-	"context"
 	"fmt"
 	"net"
 	"net/http"
-	"time"
 )
 
 func main() {
+	// // Step 1: Check marzban status
+	// for {
+	// 	cmd := exec.Command("sudo", "marzban", "status")
+	// 	output, err := cmd.Output()
+	// 	if err != nil {
+	// 		fmt.Println("Error executing marzban command:", err)
+	// 		time.Sleep(5 * time.Second) // Wait before retrying
+	// 		continue
+	// 	}
+
+	// 	if strings.Contains(string(output), "running") {
+	// 		break
+	// 	}
+
+	// 	fmt.Println("Marzban status not up, retrying...")
+	// 	time.Sleep(5 * time.Second) // Wait before retrying
+	// }
+
 	// Step 2: Extract ens5 inet IPv4 address
 	interfaces, err := net.Interfaces()
 	if err != nil {
@@ -19,7 +35,7 @@ func main() {
 
 	var ipv4Addr string
 	for _, iface := range interfaces {
-		if iface.Name == "eth0" {
+		if iface.Name == "ens5" {
 			addrs, err := iface.Addrs()
 			if err != nil {
 				fmt.Println("Error getting addresses for ens5:", err)
@@ -51,9 +67,7 @@ func main() {
 
 	fmt.Println("Extracted IPv4 Address:", ipv4Addr)
 
-	time.Sleep(5 * time.Minute)
-
-	endpoint := fmt.Sprintf("https://phoenixstatus.com/api/v1/digital-ocean/readiness/%s", ipv4Addr)
+	endpoint := fmt.Sprintf("https://phoenixstatus.com/api/v1/readiness/%s", ipv4Addr)
 	// Step 3: Create HTTP request and send data to server
 	req, err := http.NewRequest("POST", endpoint, nil)
 	if err != nil {
@@ -61,11 +75,6 @@ func main() {
 		return
 	}
 	req.Header.Set("Content-Type", "application/json")
-
-	ctx, cancel := context.WithTimeout(context.Background(), 15*time.Minute)
-	defer cancel()
-
-	req = req.WithContext(ctx)
 
 	client := &http.Client{}
 	resp, err := client.Do(req)
