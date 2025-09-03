@@ -51,7 +51,7 @@ func main() {
 
 	fmt.Println("Extracted IPv4 Address:", ipv4Addr)
 
-	time.Sleep(5 * time.Minute)
+	time.Sleep(1 * time.Minute)
 
 	endpoint := fmt.Sprintf("https://phoenixstatus.com/api/v1/ovh/readiness/%s", ipv4Addr)
 	// Step 3: Create HTTP request and send data to server
